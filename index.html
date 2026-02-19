@@ -473,5 +473,25 @@
         </div>
     </footer>
 
+    <script>
+    (function(){
+        var W='https://n8n.info-immokonzept.de/webhook/page-tracker';
+        function send(d){
+            d.timestamp=new Date().toISOString();
+            d.referrer=document.referrer||'direkt';
+            try{navigator.sendBeacon(W,JSON.stringify(d))}
+            catch(e){fetch(W,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(d),keepalive:true}).catch(function(){})}
+        }
+        send({event:'pageview'});
+        document.addEventListener('click',function(e){
+            var a=e.target.closest('a[href]');
+            if(!a)return;
+            var h=a.getAttribute('href');
+            if(h.indexOf('.pdf')!==-1) send({event:'download',file:h});
+            else if(h.indexOf('http')===0) send({event:'click',url:h});
+        });
+    })();
+    </script>
+
 </body>
 </html>
